@@ -1,10 +1,14 @@
 package tn.esprit.gestionzoo.entities;
 
+import tn.esprit.gestionzoo.exceptions.InvalidAgeException;
+import tn.esprit.gestionzoo.exceptions.ZooFullException;
+
 // Prosit 2/3 (Zoo + methods), Prosit 4 (private attributes, name not empty, isZooFull in addAnimal)
 // Prosit 6 (aquaticAnimals array + related methods)
+// Prosit 7 (addAnimal throws ZooFullException / InvalidAgeException, 3 cages)
 public class Zoo {
 
-    public static final int NBR_CAGES = 25;      // A zoo can contain a maximum of 25 animals
+    public static final int NBR_CAGES = 3;       // Instruction 33: reduced from 25 to 3 to test the exception
     public static final int MAX_AQUATIC = 10;    // Instruction 25
 
     private Animal[] animals;
@@ -62,19 +66,19 @@ public class Zoo {
         return nbrAnimals >= NBR_CAGES;
     }
 
-    // Instruction 17: addAnimal uses isZooFull() (and refuses duplicates)
-    public boolean addAnimal(Animal animal) {
-        if (isZooFull()) {
-            System.out.println("The zoo is full, cannot add " + animal.getName());
-            return false;
+    // Prosit 7 - Instructions 32, 33, 34:
+    // return type changed from boolean to void, the isZooFull() test is replaced by exceptions.
+    public void addAnimal(Animal animal) throws ZooFullException, InvalidAgeException {
+        if (animal.getAge() < 0) {
+            throw new InvalidAgeException("Cannot add " + animal.getName()
+                    + ": age cannot be negative (" + animal.getAge() + ")");
         }
-        if (searchAnimal(animal) != -1) {
-            System.out.println(animal.getName() + " is already in the zoo");
-            return false;
+        if (nbrAnimals >= NBR_CAGES) {
+            throw new ZooFullException("Cannot add " + animal.getName()
+                    + ": the zoo " + name + " is full (" + NBR_CAGES + " cages)");
         }
         animals[nbrAnimals] = animal;
         nbrAnimals++;
-        return true;
     }
 
     // Returns the index of the animal (same name), or -1 if not found

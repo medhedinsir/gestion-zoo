@@ -1,6 +1,8 @@
 package tn.esprit.gestionzoo.main;
 
 import tn.esprit.gestionzoo.entities.*;
+import tn.esprit.gestionzoo.exceptions.InvalidAgeException;
+import tn.esprit.gestionzoo.exceptions.ZooFullException;
 
 import java.util.Scanner;
 
@@ -42,14 +44,30 @@ public class ZooManagement {
         // ================= PROSIT 2, 3, 4 =================
         Animal lion = new Animal("Felidae", "Simba", 5, true);
         Animal tiger = new Animal("Felidae", "Shere Khan", 7, true);
-        Animal badAge = new Animal("Canidae", "Rex", -3, true); // age check -> 0
+        Animal badAge = new Animal("Canidae", "Rex", -3, true); // negative age
+        Animal bear = new Animal("Ursidae", "Baloo", 9, true);
+        Animal monkey = new Animal("Cercopithecidae", "Abu", 4, true);
 
         Zoo myZoo = new Zoo(zooName, "Tunis");
         Zoo emptyName = new Zoo("", "Sousse"); // name check
 
-        myZoo.addAnimal(lion);
-        myZoo.addAnimal(tiger);
-        myZoo.addAnimal(lion); // duplicate -> refused
+        // ================= PROSIT 7 =================
+        // Instructions 33 & 34: the zoo has only 3 cages.
+        // Each add is in a try/catch, and "finally" ALWAYS displays the number of animals.
+        Animal[] toAdd = {lion, tiger, badAge, bear, monkey};
+        for (Animal a : toAdd) {
+            try {
+                myZoo.addAnimal(a);
+                System.out.println(a.getName() + " added.");
+            } catch (ZooFullException e) {
+                System.out.println("ZooFullException: " + e.getMessage());
+            } catch (InvalidAgeException e) {
+                System.out.println("InvalidAgeException: " + e.getMessage());
+            } finally {
+                System.out.println("Number of animals: " + myZoo.getNbrAnimals());
+            }
+        }
+
         myZoo.displayAnimals();
         System.out.println(myZoo);
         System.out.println("Bigger zoo: " + Zoo.comparerZoo(myZoo, emptyName).getName());
